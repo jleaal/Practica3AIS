@@ -9,15 +9,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PiratesURJCTest {
 
-    public void testR1(String salida, String ronda) {
+    public void funcionComparativa (String salida, String ronda) {
         PiratesURJC partida = new PiratesURJC();
         String resultado = partida.play(ronda);
         assertEquals(resultado, salida);
     }
 
     @Test
-    @DisplayName("Test R1 (1M 4M)")
+    @DisplayName("Test R1_1 (1M 4M)")
     public void TestR1_1 (){
-        testR1("Gana jugador 2", "1M 4M");
+        funcionComparativa("Gana jugador 2", "1M 4M");
+    }
+    @Test
+    @DisplayName("Test R1_2 (5M 2M)")
+    public void TestR1_2 (){
+        funcionComparativa("Gana jugador 1", "5M 2M");
     }
 }
