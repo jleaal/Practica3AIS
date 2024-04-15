@@ -2,8 +2,14 @@
 
 Nombre de los alumnos: Jorge Leal y Javier Laureano Ochoa
 
-### Test generico
-
+### Función comparativa
+```java
+public void testR1(String salida, String ronda) {
+PiratesURJC partida = new PiratesURJC();
+String resultado = partida.play(ronda);
+assertEquals(resultado, salida);
+}
+```
 
 ### Ejemplo 1
 
@@ -28,18 +34,12 @@ Actual:Gana jugador 2
 
 **R1_1. Código mínimo para que el test pase**
 
-public String play(String ronda){
-if (ronda.equals("1M 4M"))
-return "Gana jugador 2";
-return null;
-}
-Describe brevemente el código mínimo implementado
-
 ```java
-public String convert(int number){
-    return "I";
+public String play(String ronda){
+    return "Gana jugador 2";
 }
 ```
+Descripción: Como no hay requisitos, simplemente necesitamos un return con la salida deseada
 
 **EJ1. Captura de que TODOS los test PASAN**
 
