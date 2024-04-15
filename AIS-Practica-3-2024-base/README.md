@@ -1,30 +1,38 @@
 # AIS-Practica-3-2024
 
-OJO! ESTO ES UN EJEMPLO. DEBERÁS BORRAR LO REFERENTE AL EJERCICIO DE NÚMEROS ROMANOS Y SUSTITUIRLO POR LO QUE SE PIDE DE ESTA PRÁCTICA.
+Nombre de los alumnos: Jorge Leal y Javier Laureano Ochoa
 
-Nombre de los alumnos: Michel Maes Bermejo e Iván Chicano Capelo
+### Test generico
+
 
 ### Ejemplo 1
 
-**INPUT y OUTPUT**: 1 -> "I"
+**INPUT y OUTPUT**: "1M 4M" -> "Gana jugador 2"
 
-**EJ1. Código de test**
+**R1_1. Código de test**
 ```java
 @Test
-public void testI() {
-    RomanConverter converter = new RomanConverter();
-    assertEquals("I", converter.convert(1));
+@DisplayName("Test R1 (1M 4M)")
+public void TestR1_1 (){
+    testR1("Gana jugador 2", "1M 4M");
 }
 ```
 
-**EJ1. Mensaje del test añadido que NO PASA**
+**R1_1. Mensaje del test añadido que NO PASA**
 
 ```log
-org.opentest4j.AssertionFailedError: expected: [I] but was: []
+org.opentest4j.AssertionFailedError: 
+Expected :null
+Actual:Gana jugador 2
 ```
 
-**EJ1. Código mínimo para que el test pase**
+**R1_1. Código mínimo para que el test pase**
 
+public String play(String ronda){
+if (ronda.equals("1M 4M"))
+return "Gana jugador 2";
+return null;
+}
 Describe brevemente el código mínimo implementado
 
 ```java
