@@ -160,15 +160,27 @@ Descripción: Ahora disponemos de cuatro salidas en base a entradas diferentes, 
 
 ![Pasa](capturas/R1_4_PASA.png "Pasa")
 
-**R1. Refactorización**
+**R1_4. Refactorización**
 
 Justificación: Al analizar los ejemplos podemos observar que cuando la letra es la misma en todas las entradas, el ganador es el que tenga el número más alto.
 
 ```java
-public String convert(int number){
-    return "I"; // Imaginemos que hemos refactorizado aquí
+public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    String[] jugadoresArray = ronda.split(" ");
+    for (int i = 1; i < jugadoresArray.length; i++) {
+        if (letra == jugadoresArray[i].charAt(1)) {
+            if (valorMax < Character.getNumericValue(jugadoresArray[i].charAt(0))) {
+                valorMax = Character.getNumericValue(jugadoresArray[i].charAt(0));
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
 }
 ```
 **R1. Captura de que TODOS los tests PASAN tras la refactorización**
 
-![Pasa](capturas/Ejemplo_1_PASA.png "Pasa")
+![Pasa](capturas/R1_4_Refactorizacion.png "Pasa")
