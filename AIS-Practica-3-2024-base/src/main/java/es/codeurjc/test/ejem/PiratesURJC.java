@@ -13,6 +13,8 @@ public class PiratesURJC {
                     valorMax = Character.getNumericValue(jugadoresArray[i].charAt(0));
                     jugador = i;
                 }
+            } else {
+                return "Gana jugador 3";
             }
         }
         return "Gana jugador " + (jugador+1);

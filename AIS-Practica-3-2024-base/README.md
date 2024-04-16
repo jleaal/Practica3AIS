@@ -176,6 +176,8 @@ public String play(String ronda) {
                 valorMax = Character.getNumericValue(jugadoresArray[i].charAt(0));
                 jugador = i;
             }
+        } else {
+            return null;
         }
     }
     return "Gana jugador " + (jugador+1);
@@ -184,3 +186,53 @@ public String play(String ronda) {
 **R1. Captura de que TODOS los tests PASAN tras la refactorización**
 
 ![Pasa](capturas/R1_4_Refactorizacion.png "Pasa")
+
+### R2_1
+
+**INPUT y OUTPUT**: "1M 4A 2M 7V" -> "Gana jugador 3"
+
+**R2_1. Código de test**
+```java
+@Test
+@DisplayName("Test R2_1 (1M 4A 2M 7V)")
+public void TestR2_1 (){
+    funcionComparativa("Gana jugador 3", "1M 4A 2M 7V");
+}
+```
+
+**R2_1. Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError: 
+Expected :null
+Actual   :Gana jugador 3
+```
+
+**R2_1. Código mínimo para que el test pase**
+
+```java
+public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    String[] jugadoresArray = ronda.split(" ");
+    for (int i = 1; i < jugadoresArray.length; i++) {
+        if (letra == jugadoresArray[i].charAt(1)) {
+            if (valorMax < Character.getNumericValue(jugadoresArray[i].charAt(0))) {
+                valorMax = Character.getNumericValue(jugadoresArray[i].charAt(0));
+                jugador = i;
+            }
+        } else {
+            return "Gana jugador 3";
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Cuando una letra sea diferente, devolver como ganador al jugador 3.
+
+**R2_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R2_1_PASA.png "Pasa")
+
+
