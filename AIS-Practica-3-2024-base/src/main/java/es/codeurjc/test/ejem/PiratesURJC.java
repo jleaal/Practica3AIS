@@ -27,7 +27,7 @@ public class PiratesURJC {
                     pirata = true;
                     jugador = i;
                 }
-                if (jugadoresArray[i].equals("SR") && !pirata){
+                if (jugadoresArray[i].equals("SR") && !(pirata || sk)){
                     jugador = i;
                 }
             }

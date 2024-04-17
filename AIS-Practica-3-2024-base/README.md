@@ -1055,7 +1055,7 @@ Descripción: Hacemos que la carta skull king active un booleano que permita que
 @Test
 @DisplayName("Test R9_3 (1N SK 4V SR)")
 public void TestR9_3 (){
-    funcionComparativa("Gana jugador 3", "1N SK 4V SR");
+    funcionComparativa("Gana jugador 2", "1N SK 4V SR");
 }
 ```
 
@@ -1093,9 +1093,9 @@ Actual   :Gana jugador 4
                 pirata = true;
                 jugador = i;
             }
-            if (jugadoresArray[i].equals("SR") && !pirata)
+            if (jugadoresArray[i].equals("SR") && !(pirata || sk)){
                 jugador = i;
-
+            }
         }
 
         if (('N'==jugadorLetra) && !cartaEspecial){
@@ -1117,9 +1117,9 @@ Actual   :Gana jugador 4
     return "Gana jugador " + (jugador+1);
 }
 ```
-Descripción: Hacemos que la carta skull king active un booleano que permita que gane a la pirata
+Descripción: Añadimos a SR que cuando se juegue otra carta especial SR pierda
 
 **R9_3. Captura de que TODOS los test PASAN**
 
-![Pasa](capturas/R9_2_PASA.png "Pasa")
+![Pasa](capturas/R9_3_PASA.png "Pasa")
 

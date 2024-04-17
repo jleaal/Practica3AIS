@@ -130,6 +130,6 @@ public class PiratesURJCTest {
     @Test
     @DisplayName("Test R9_3 (1N SK 4V SR)")
     public void TestR9_3 (){
-        funcionComparativa("Gana jugador 3", "1N SK 4V SR");
+        funcionComparativa("Gana jugador 2", "1N SK 4V SR");
     }
 }
