@@ -7,7 +7,7 @@ Nombre de los alumnos: Jorge Leal y Javier Laureano Ochoa
 public void funcionComparativa (String salida, String ronda) {
     PiratesURJC partida = new PiratesURJC();
     String resultado = partida.play(ronda);
-    assertEquals(resultado, salida);
+    assertEquals(salida, resultado);
 }
 ```
 Descripción: 
@@ -29,8 +29,8 @@ public void TestR1_1 (){
 
 ```log
 org.opentest4j.AssertionFailedError: 
-Expected :null
-Actual:Gana jugador 2
+Expected :Gana jugador 2
+Actual  :null
 ```
 
 **R1_1. Código mínimo para que el test pase**
@@ -63,8 +63,8 @@ public void TestR1_2 (){
 
 ```log
 org.opentest4j.AssertionFailedError: 
-Expected :Gana jugador 2
-Actual   :Gana jugador 1
+Expected :Gana jugador 1
+Actual   :Gana jugador 2
 ```
 
 **R1_2. Código mínimo para que el test pase**
@@ -99,8 +99,8 @@ public void TestR1_3 (){
 
 ```log
 org.opentest4j.AssertionFailedError: 
-Expected :Gana jugador 2
-Actual   :Gana jugador 3
+Expected :Gana jugador 3
+Actual   :Gana jugador 2
 ```
 
 **R1_3. Código mínimo para que el test pase**
@@ -137,8 +137,8 @@ public void TestR1_4 (){
 
 ```log
 org.opentest4j.AssertionFailedError: 
-Expected :Gana jugador 2
-Actual   :Gana jugador 4
+Expected :Gana jugador 4
+Actual   :Gana jugador 2
 ```
 
 **R1_4. Código mínimo para que el test pase**
@@ -204,8 +204,8 @@ public void TestR2_1 (){
 
 ```log
 org.opentest4j.AssertionFailedError: 
-Expected :null
-Actual   :Gana jugador 3
+Expected :Gana jugador 3
+Actual   :null
 ```
 
 **R2_1. Código mínimo para que el test pase**
@@ -232,6 +232,150 @@ public String play(String ronda) {
 Descripción: Cuando una letra sea diferente, devolver como ganador al jugador 3.
 
 **R2_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R2_1_PASA.png "Pasa")
+
+### R2_2
+
+**INPUT y OUTPUT**: "2A 7V 4V 1A" -> "Gana jugador 1"
+
+**R2_2. Código de test**
+```java
+@Test
+@DisplayName("Test R2_2 (2A 7V 4V 1A)")
+public void TestR2_2(){
+    funcionComparativa("Gana jugador 1", "2A 7V 4V 1A");
+}
+```
+
+**R2_2. Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError: 
+Expected :Gana jugador 1
+Actual   :Gana jugador 3
+```
+
+**R2_2. Código mínimo para que el test pase**
+
+```java
+public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    String[] jugadoresArray = ronda.split(" ");
+    for (int i = 1; i < jugadoresArray.length; i++) {
+        if (letra == jugadoresArray[i].charAt(1)) {
+            if (valorMax < Character.getNumericValue(jugadoresArray[i].charAt(0))) {
+                valorMax = Character.getNumericValue(jugadoresArray[i].charAt(0));
+                jugador = i;
+            }
+        } else {
+            return "Gana jugador 3";
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Cuando una letra sea diferente, devolver como ganador al jugador 3.
+
+**R2_2. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R2_1_PASA.png "Pasa")
+
+### R2_3
+
+**INPUT y OUTPUT**: "2A 7V 4V 1A" -> "Gana jugador 1"
+
+**R2_3. Código de test**
+```java
+@Test
+@DisplayName("Test R2_2 (2A 7V 4V 1A)")
+public void TestR2_2(){
+    funcionComparativa("Gana jugador 1", "2A 7V 4V 1A");
+}
+```
+
+**R2_3. Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError: 
+Expected :Gana jugador 1
+Actual   :Gana jugador 3
+```
+
+**R2_3. Código mínimo para que el test pase**
+
+```java
+public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    String[] jugadoresArray = ronda.split(" ");
+    for (int i = 1; i < jugadoresArray.length; i++) {
+        if (letra == jugadoresArray[i].charAt(1)) {
+            if (valorMax < Character.getNumericValue(jugadoresArray[i].charAt(0))) {
+                valorMax = Character.getNumericValue(jugadoresArray[i].charAt(0));
+                jugador = i;
+            }
+        } else {
+            return "Gana jugador 3";
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Cuando una letra sea diferente, devolver como ganador al jugador 3.
+
+**R2_3. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R2_1_PASA.png "Pasa")
+
+### R3_1
+
+**INPUT y OUTPUT**: "2V 6M 3N 8V" -> "Gana jugador 3"
+
+**R3_1. Código de test**
+```java
+@Test
+@DisplayName("Test R3_1 (2A 7V 4V 1A)")
+public void TestR3_1(){
+    funcionComparativa("Gana jugador 3", "2V 6M 3N 8V");
+}
+```
+
+**R3_1. Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError: 
+Expected :Gana jugador 3
+Actual   :Gana jugador 4
+```
+
+**R3_1. Código mínimo para que el test pase**
+
+```java
+public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    String[] jugadoresArray = ronda.split(" ");
+    for (int i = 1; i < jugadoresArray.length; i++) {
+        if (letra == jugadoresArray[i].charAt(1)) {
+            if (valorMax < Character.getNumericValue(jugadoresArray[i].charAt(0))) {
+                valorMax = Character.getNumericValue(jugadoresArray[i].charAt(0));
+                jugador = i;
+            }
+        } else {
+            return "Gana jugador 3";
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Cuando una letra sea diferente, devolver como ganador al jugador 3.
+
+**R3_1. Captura de que TODOS los test PASAN**
 
 ![Pasa](capturas/R2_1_PASA.png "Pasa")
 
