@@ -8,16 +8,31 @@ public class PiratesURJC {
         int jugador = 0;
         boolean esPrimeraN=false;
         String[] jugadoresArray = ronda.split(" ");
+        boolean cartaEspecial = false;
+        boolean pirata = false;
+        boolean sk = false;
+
 
         for (int i = 0; i < jugadoresArray.length; i++) {
             char jugadorLetra = jugadoresArray[i].charAt(1);
             int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
 
-            if ('R'==jugadorLetra){
-                return "Gana jugador " + (i+1);
+            if (jugadoresArray[i].equals("SR") || jugadoresArray[i].equals("PR") || jugadoresArray[i].equals("SK")){
+                cartaEspecial = true;
+                if (jugadoresArray[i].equals("SK")){
+                    sk = true;
+                    jugador = i;
+                }
+                if (jugadoresArray[i].equals("PR") && !sk) {
+                    pirata = true;
+                    jugador = i;
+                }
+                if (jugadoresArray[i].equals("SR") && !pirata){
+                    jugador = i;
+                }
             }
 
-            if ('N'==jugadorLetra){
+            if (('N'==jugadorLetra) && !cartaEspecial){
                 if (!esPrimeraN){
                     valorMax = jugadorValor;
                     jugador = i;
@@ -26,7 +41,7 @@ public class PiratesURJC {
                 }
 
             }
-            if (letra == jugadorLetra) {
+            if ((letra == jugadorLetra) && !cartaEspecial) {
                 if (valorMax < jugadorValor) {
                     valorMax = jugadorValor;
                     jugador = i;
@@ -35,7 +50,5 @@ public class PiratesURJC {
         }
         return "Gana jugador " + (jugador+1);
     }
-
-
 }
 

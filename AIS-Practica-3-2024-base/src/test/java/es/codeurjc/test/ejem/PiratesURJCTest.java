@@ -84,4 +84,52 @@ public class PiratesURJCTest {
     public void TestR4_2 (){
         funcionComparativa("Gana jugador 2", "2V SR 4V 1N");
     }
+
+    @Test
+    @DisplayName("Test R5_1 (7M SR SR 8V)")
+    public void TestR5_1 (){
+        funcionComparativa("Gana jugador 3", "7M SR SR 8V");
+    }
+
+    @Test
+    @DisplayName("Test R6_1 (2V PR 3N 1N)")
+    public void TestR6_1 (){
+        funcionComparativa("Gana jugador 2", "2V PR 3N 1N");
+    }
+
+    @Test
+    @DisplayName("Test R7_1 (8A PR 1N PR)")
+    public void TestR7_1 (){
+        funcionComparativa("Gana jugador 4", "8A PR 1N PR");
+    }
+
+    @Test
+    @DisplayName("Test R8_1 (9V PR 4V SR)")
+    public void TestR8_1 (){
+        funcionComparativa("Gana jugador 2", "9V PR 4V SR");
+    }
+
+    @Test
+    @DisplayName("Test R8_2 (SR SR PR SR)")
+    public void TestR8_2 (){
+        funcionComparativa("Gana jugador 3", "SR SR PR SR");
+    }
+
+    @Test
+    @DisplayName("Test R9_1 (7N 8A 1V SK)")
+    public void TestR9_1 (){
+        funcionComparativa("Gana jugador 4", "7N 8A 1V SK");
+    }
+
+    @Test
+    @DisplayName("Test R9_2 (2V PR SK 1N)")
+    public void TestR9_2 (){
+        funcionComparativa("Gana jugador 3", "2V PR SK 1N");
+    }
+
+    @Test
+    @DisplayName("Test R9_3 (1N SK 4V SR)")
+    public void TestR9_3 (){
+        funcionComparativa("Gana jugador 3", "1N SK 4V SR");
+    }
 }

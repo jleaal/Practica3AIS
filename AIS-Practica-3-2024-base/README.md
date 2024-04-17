@@ -459,37 +459,6 @@ a 'N'. Si se detecta una segunda simplemente entraría en if que teníamos previ
 
 ![Pasa](capturas/R3_3_PASA.png "Pasa")
 
-**R1_4. Refactorización**
-
-Justificación: Al analizar los ejemplos podemos observar que cuando la letra es la misma en todas las entradas,
-el ganador es el que tenga el número más alto. Por lo que almacenamos la letra y el número del primer jugador y comparamos
-este último con el del resto de jugadores para almacenar el número mas alto. Quien poseea el numero más alto será el ganador.
-```java
-public String play(String ronda) {
-    char letra = ronda.charAt(1);
-    int valorMax = Character.getNumericValue(ronda.charAt(0));
-    int jugador = 0;
-    String[] jugadoresArray = ronda.split(" ");
-    for (int i = 1; i < jugadoresArray.length; i++) {
-        char jugadorLetra = jugadoresArray[i].charAt(1);
-        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
-
-        if (letra == jugadorLetra) {
-            if (valorMax < jugadorValor) {
-                valorMax = jugadorValor;
-                jugador = i;
-            }
-        } else {
-            return null;
-        }    
-    }
-    return "Gana jugador " + (jugador+1);
-}
-```
-**R1_4. Captura de que TODOS los tests PASAN tras la refactorización**
-
-![Pasa](capturas/R1_4_Refactorizacion.png "Pasa")
-
 ### R4_1
 
 **INPUT y OUTPUT**: "2V 6M 3N SR" -> "Gana jugador 4"
@@ -524,7 +493,7 @@ Actual   :Gana jugador 3
             char jugadorLetra = jugadoresArray[i].charAt(1);
             int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
 
-            if ('R'==jugadorLetra){
+            if (jugadoresArray[i].equals("SR")){
                 return "Gana jugador " + (i+1);
             }
             
@@ -546,7 +515,7 @@ Actual   :Gana jugador 3
         return "Gana jugador " + (jugador+1);
     }
 ```
-Descripción: Al detectar una 'R', significa que el jugador tiene una carta sirena, por lo que gana a todas las cartas numéricas.
+Descripción: Al detectar el par 'SR', significa que el jugador tiene una carta sirena, por lo que gana a todas las cartas numéricas.
 
 **R4_1. Captura de que TODOS los test PASAN**
 
@@ -577,4 +546,580 @@ No se han realizado modificaciones, debido a que ya abarcaba los requisitos de e
 **R4_2. Captura de que TODOS los test PASAN**
 
 ![Pasa](capturas/R4_2_PASA.png "Pasa")
+
+### R5_1
+
+**INPUT y OUTPUT**: "7M SR SR 8V" -> "Gana jugador 3"
+
+**R5_1. Código de test**
+```java
+@Test
+@DisplayName("Test R5_1 (7M SR SR 8V)")
+public void TestR5_1 (){
+    funcionComparativa("Gana jugador 3", "7M SR SR 8V");
+}
+```
+
+**R5_1. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 3
+Actual   :Gana jugador 2
+
+**R5_1. Código mínimo para que el test pase**
+
+```java
+    public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean sirena = false;
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR")){
+            sirena = true;
+            jugador = i;
+        }
+
+        if (('N'==jugadorLetra) && !sirena){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !sirena) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Añadimos un boolean para que cuando se detecte una carta sirena, solo pueda ganar ese jugador o el siguiente en echar una carta sirena
+
+
+**R5_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R5_1_PASA.png "Pasa")
+
+### R6_1
+
+**INPUT y OUTPUT**: "2V PR 3N 1N" -> "Gana jugador 2"
+
+**R6_1. Código de test**
+```java
+@Test
+@DisplayName("Test R6_1 (2V PR 3N 1N)")
+public void TestR6_1 (){
+    funcionComparativa("Gana jugador 2", "2V PR 3N 1N");
+}
+```
+
+**R6_1. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 2
+Actual   :Gana jugador 3
+
+**R6_1. Código mínimo para que el test pase**
+
+```java
+    public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean sirena = false;
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR")){
+            sirena = true;
+            jugador = i;
+        }
+
+        if (jugadoresArray[i].equals("PR")){
+            return "Gana jugador " + (i+1);
+        }
+
+        if (('N'==jugadorLetra) && !sirena){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !sirena) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Comprobamos que el par es PR y si se da el caso, gana la mano
+
+
+**R6_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R6_1_PASA.png "Pasa")
+
+### R7_1
+
+**INPUT y OUTPUT**: "8A PR 1N PR" -> "Gana jugador 4"
+
+**R7_1. Código de test**
+```java
+@Test
+@DisplayName("Test R7_1 (8A PR 1N PR)")
+public void TestR7_1 (){
+    funcionComparativa("Gana jugador 4", "8A PR 1N PR");
+}
+```
+
+**R7_1. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 4
+Actual   :Gana jugador 2
+
+**R7_1. Código mínimo para que el test pase**
+
+```java
+    public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean sirena = false;
+    boolean pirata = false;
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR")){
+            sirena = true;
+            jugador = i;
+        }
+
+        if (jugadoresArray[i].equals("PR")){
+            pirata = true;
+            jugador = i;
+        }
+
+        if (('N'==jugadorLetra) && !sirena && !pirata){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !sirena && !pirata) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Añadimos un boolean para que cuando se detecte una carta pirata, solo pueda ganar ese jugador o el siguiente en echar una carta pirata
+
+
+**R7_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R7_1_PASA.png "Pasa")
+
+**R7_1. Refactorización**
+
+Justificación: Podemos observar que el funcionamiento de la carta sirena es igual al de la carta pirata por lo que podemos agrupar los dos if y sus booleans
+```java
+    public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean cartaEspecial = false;
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR") || (jugadoresArray[i].equals("PR"))){
+            cartaEspecial = true;
+            jugador = i;
+        }
+
+        if (('N'==jugadorLetra) && !cartaEspecial){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !cartaEspecial) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+**R7_1. Captura de que TODOS los tests PASAN tras la refactorización**
+
+![Pasa](capturas/R7_1_Refactorizacion.png "Pasa")
+
+### R8_1
+
+**INPUT y OUTPUT**: "9V PR 4V SR" -> "Gana jugador 2"
+
+**R8_1. Código de test**
+```java
+@Test
+@DisplayName("Test R8_1 (9V PR 4V SR)")
+public void TestR8_1 (){
+    funcionComparativa("Gana jugador 2", "9V PR 4V SR");
+}
+```
+
+**R8_1. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 2
+Actual   :Gana jugador 4
+
+**R8_1. Código mínimo para que el test pase**
+
+```java
+
+public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean cartaEspecial = false;
+    boolean pirata = false;
+
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR") || (jugadoresArray[i].equals("PR"))){
+            cartaEspecial = true;
+            if (jugadoresArray[i].equals("PR")) {
+                pirata = true;
+                jugador = i;
+            }
+            if (jugadoresArray[i].equals("SR") && !pirata)
+                jugador = i;
+
+        }
+
+        if (('N'==jugadorLetra) && !cartaEspecial){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !cartaEspecial) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Comprobamos con un boolean que se juegue una carta pirata por si se juega tambien una sirena
+
+**R8_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R8_1_PASA.png "Pasa")
+
+### R8_2
+
+**INPUT y OUTPUT**: "9V PR 4V SR" -> "Gana jugador 2"
+
+**R8_2. Código de test**
+```java
+@Test
+@DisplayName("Test R8_2 (SR SR PR SR)")
+public void TestR8_2 (){
+    funcionComparativa("Gana jugador 3", "SR SR PR SR");
+}
+```
+
+**R8_2. Mensaje del test añadido que NO PASA**
+
+Si que pasa el test debido a que en nuestro código tenemos implementado que al detectar una carta pirata si se juega una sirena, la pirata será ganadora.
+
+**R8_2. Código mínimo para que el test pase**
+
+No se han realizado modificaciones, debido a que ya abarcaba los requisitos de este caso.
+
+**R8_2. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R8_2_PASA.png "Pasa")
+
+### R9_1
+
+**INPUT y OUTPUT**: "7N 8A 1V SK" -> "Gana jugador 4"
+
+**R9_1. Código de test**
+```java
+@Test
+@DisplayName("Test R9_1 (7N 8A 1V SK)")
+public void TestR9_1 (){
+    funcionComparativa("Gana jugador 4", "7N 8A 1V SK");
+}
+```
+
+**R9_1. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 4
+Actual   :Gana jugador 1
+
+**R9_1. Código mínimo para que el test pase**
+
+```java
+    public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean cartaEspecial = false;
+    boolean pirata = false;
+
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR") || jugadoresArray[i].equals("PR") || jugadoresArray[i].equals("SK")){
+            cartaEspecial = true;
+            if (jugadoresArray[i].equals("SK") && !pirata){
+                jugador = i;
+            }
+            if (jugadoresArray[i].equals("PR")) {
+                pirata = true;
+                jugador = i;
+            }
+            if (jugadoresArray[i].equals("SR") && !pirata)
+                jugador = i;
+
+        }
+
+        if (('N'==jugadorLetra) && !cartaEspecial){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !cartaEspecial) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Añadimos la carta SK como una carta especial con un funcionamiento igual al de sirena
+
+**R9_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R9_1_PASA.png "Pasa")
+
+### R9_2
+
+**INPUT y OUTPUT**: "2V PR SK 1N" -> "Gana jugador 3"
+
+**R9_2. Código de test**
+```java
+@Test
+@DisplayName("Test R9_2 (2V PR SK 1N)")
+public void TestR9_2 (){
+    funcionComparativa("Gana jugador 3", "2V PR SK 1N");
+}
+```
+
+**R9_2. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 3
+Actual   :Gana jugador 2
+
+**R9_2. Código mínimo para que el test pase**
+
+```java
+    public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean cartaEspecial = false;
+    boolean pirata = false;
+    boolean sk = false;
+
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR") || jugadoresArray[i].equals("PR") || jugadoresArray[i].equals("SK")){
+            cartaEspecial = true;
+            if (jugadoresArray[i].equals("SK")){
+                sk = true;
+                jugador = i;
+            }
+            if (jugadoresArray[i].equals("PR") && !sk) {
+                pirata = true;
+                jugador = i;
+            }
+            if (jugadoresArray[i].equals("SR") && !pirata)
+                jugador = i;
+
+        }
+
+        if (('N'==jugadorLetra) && !cartaEspecial){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !cartaEspecial) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Hacemos que la carta skull king active un booleano que permita que gane a la pirata
+
+**R9_2. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R9_2_PASA.png "Pasa")
+
+### R9_3
+
+**INPUT y OUTPUT**: "1N SK 4V SR" -> "Gana jugador 2"
+
+**R9_3. Código de test**
+```java
+@Test
+@DisplayName("Test R9_3 (1N SK 4V SR)")
+public void TestR9_3 (){
+    funcionComparativa("Gana jugador 3", "1N SK 4V SR");
+}
+```
+
+**R9_3. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 3
+Actual   :Gana jugador 4
+
+**R9_3. Código mínimo para que el test pase**
+
+```java
+    public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    boolean esPrimeraN=false;
+    String[] jugadoresArray = ronda.split(" ");
+    boolean cartaEspecial = false;
+    boolean pirata = false;
+    boolean sk = false;
+
+
+    for (int i = 0; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (jugadoresArray[i].equals("SR") || jugadoresArray[i].equals("PR") || jugadoresArray[i].equals("SK")){
+            cartaEspecial = true;
+            if (jugadoresArray[i].equals("SK")){
+                sk = true;
+                jugador = i;
+            }
+            if (jugadoresArray[i].equals("PR") && !sk) {
+                pirata = true;
+                jugador = i;
+            }
+            if (jugadoresArray[i].equals("SR") && !pirata)
+                jugador = i;
+
+        }
+
+        if (('N'==jugadorLetra) && !cartaEspecial){
+            if (!esPrimeraN){
+                valorMax = jugadorValor;
+                jugador = i;
+                esPrimeraN=true;
+                letra='N';
+            }
+
+        }
+        if ((letra == jugadorLetra) && !cartaEspecial) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        }
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+Descripción: Hacemos que la carta skull king active un booleano que permita que gane a la pirata
+
+**R9_3. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R9_2_PASA.png "Pasa")
 
