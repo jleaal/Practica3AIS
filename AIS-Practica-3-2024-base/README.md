@@ -396,7 +396,7 @@ como ganador a ese jugador.
 
 **R3_2. Código mínimo para que el test pase**
 
-No se han realizado modificaciones, el codigo es idéntico al del caso anteror.
+No se han realizado modificaciones, debido a que ya abarcaba los requisitos de este caso.
 
 **R3_2. Captura de que TODOS los test PASAN**
 
@@ -459,4 +459,122 @@ a 'N'. Si se detecta una segunda simplemente entraría en if que teníamos previ
 
 ![Pasa](capturas/R3_3_PASA.png "Pasa")
 
+**R1_4. Refactorización**
+
+Justificación: Al analizar los ejemplos podemos observar que cuando la letra es la misma en todas las entradas,
+el ganador es el que tenga el número más alto. Por lo que almacenamos la letra y el número del primer jugador y comparamos
+este último con el del resto de jugadores para almacenar el número mas alto. Quien poseea el numero más alto será el ganador.
+```java
+public String play(String ronda) {
+    char letra = ronda.charAt(1);
+    int valorMax = Character.getNumericValue(ronda.charAt(0));
+    int jugador = 0;
+    String[] jugadoresArray = ronda.split(" ");
+    for (int i = 1; i < jugadoresArray.length; i++) {
+        char jugadorLetra = jugadoresArray[i].charAt(1);
+        int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+        if (letra == jugadorLetra) {
+            if (valorMax < jugadorValor) {
+                valorMax = jugadorValor;
+                jugador = i;
+            }
+        } else {
+            return null;
+        }    
+    }
+    return "Gana jugador " + (jugador+1);
+}
+```
+**R1_4. Captura de que TODOS los tests PASAN tras la refactorización**
+
+![Pasa](capturas/R1_4_Refactorizacion.png "Pasa")
+
+### R4_1
+
+**INPUT y OUTPUT**: "2V 6M 3N SR" -> "Gana jugador 4"
+
+**R4_1. Código de test**
+```java
+@Test
+@DisplayName("Test R4_1 (2V 6M 3N SR)")
+public void TestR4_1(){
+    funcionComparativa("Gana jugador 4", "2V 6M 3N SR");
+}
+```
+
+**R4_1. Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 4
+Actual   :Gana jugador 3
+```
+
+**R4_1. Código mínimo para que el test pase**
+```java
+    public String play(String ronda) {
+        char letra = ronda.charAt(1);
+        int valorMax = Character.getNumericValue(ronda.charAt(0));
+        int jugador = 0;
+        boolean esPrimeraN=false;
+        String[] jugadoresArray = ronda.split(" ");
+
+        for (int i = 0; i < jugadoresArray.length; i++) {
+            char jugadorLetra = jugadoresArray[i].charAt(1);
+            int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+
+            if ('R'==jugadorLetra){
+                return "Gana jugador " + (i+1);
+            }
+            
+            if ('N'==jugadorLetra){
+                if (!esPrimeraN){
+                    valorMax = jugadorValor;
+                    jugador = i;
+                    esPrimeraN=true;
+                    letra='N';
+                }
+            }
+            if (letra == jugadorLetra) {
+                if (valorMax < jugadorValor) {
+                    valorMax = jugadorValor;
+                    jugador = i;
+                }
+            }
+        }
+        return "Gana jugador " + (jugador+1);
+    }
+```
+Descripción: Al detectar una 'R', significa que el jugador tiene una carta sirena, por lo que gana a todas las cartas numéricas.
+
+**R4_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R4_1_PASA.png "Pasa")
+
+### R4_2
+
+**INPUT y OUTPUT**: "2V SR 4V 1N" -> "Gana jugador 2"
+
+**R4_2. Código de test**
+```java
+@Test
+@DisplayName("Test R4_2 (2V SR 4V 1N)")
+public void TestR4_1(){
+    funcionComparativa("Gana jugador 2", "2V SR 4V 1N");
+}
+```
+
+**R4_2. Mensaje del test añadido que NO PASA**
+
+Si que pasa el test debido a que en nuestro código tenemos implementado que al detectar la primera sirena el jugador que 
+tenga dicha carta sea el ganador. Este caso es muy similar al anteror.
+
+**R4_2. Código mínimo para que el test pase**
+
+No se han realizado modificaciones, debido a que ya abarcaba los requisitos de este caso.
+
+**R4_2. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R4_2_PASA.png "Pasa")
 

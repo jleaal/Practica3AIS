@@ -13,13 +13,18 @@ public class PiratesURJC {
             char jugadorLetra = jugadoresArray[i].charAt(1);
             int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
 
+            if ('R'==jugadorLetra){
+                return "Gana jugador " + (i+1);
+            }
+
             if ('N'==jugadorLetra){
                 if (!esPrimeraN){
                     valorMax = jugadorValor;
                     jugador = i;
                     esPrimeraN=true;
+                    letra='N';
                 }
-                letra='N';
+
             }
             if (letra == jugadorLetra) {
                 if (valorMax < jugadorValor) {
