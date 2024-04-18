@@ -132,4 +132,16 @@ public class PiratesURJCTest {
     public void TestR9_3 (){
         funcionComparativa("Gana jugador 2", "1N SK 4V SR");
     }
+
+    @Test
+    @DisplayName("Test R10_1 (PR SK SR SR)")
+    public void TestR10_1 (){
+        funcionComparativa("Gana jugador 3", "PR SK SR SR");
+    }
+
+    @Test
+    @DisplayName("Test R11_1 (1V KK SR)")
+    public void TestR11_1 (){
+        funcionComparativa("Gana jugador 1", "1V KK SR");
+    }
 }

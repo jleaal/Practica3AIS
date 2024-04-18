@@ -3,52 +3,55 @@ package es.codeurjc.test.ejem;
 public class PiratesURJC {
 
     public String play(String ronda) {
-        char letra = ronda.charAt(1);
-        int valorMax = Character.getNumericValue(ronda.charAt(0));
-        int jugador = 0;
-        boolean esPrimeraN=false;
-        String[] jugadoresArray = ronda.split(" ");
-        boolean cartaEspecial = false;
-        boolean pirata = false;
-        boolean sk = false;
+        char letter = ronda.charAt(1);
+        int maxValue = Character.getNumericValue(ronda.charAt(0));
+        int player = 0;
+        boolean firstN=false;
+        String[] playersArray = ronda.split(" ");
+        boolean specialCart = false;
+        boolean pirate = false;
+        boolean skull_king = false;
 
 
-        for (int i = 0; i < jugadoresArray.length; i++) {
-            char jugadorLetra = jugadoresArray[i].charAt(1);
-            int jugadorValor = Character.getNumericValue(jugadoresArray[i].charAt(0));
+        for (int i = 0; i < playersArray.length; i++) {
+            char player_Colour = playersArray[i].charAt(1);
+            int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
 
-            if (jugadoresArray[i].equals("SR") || jugadoresArray[i].equals("PR") || jugadoresArray[i].equals("SK")){
-                cartaEspecial = true;
-                if (jugadoresArray[i].equals("SK")){
-                    sk = true;
-                    jugador = i;
+            if (playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK")){
+                specialCart = true;
+                if (playersArray[i].equals("SK")){
+                    skull_king = true;
+                    player = i;
+                    if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
+                        player = i+1;
+                    }
                 }
-                if (jugadoresArray[i].equals("PR") && !sk) {
-                    pirata = true;
-                    jugador = i;
+                if (playersArray[i].equals("PR") && !skull_king) {
+                    pirate = true;
+                    player = i;
                 }
-                if (jugadoresArray[i].equals("SR") && !(pirata || sk)){
-                    jugador = i;
+                if (playersArray[i].equals("SR") && !(pirate || skull_king)){
+                    player = i;
                 }
             }
 
-            if (('N'==jugadorLetra) && !cartaEspecial){
-                if (!esPrimeraN){
-                    valorMax = jugadorValor;
-                    jugador = i;
-                    esPrimeraN=true;
-                    letra='N';
+            if (('N'==player_Colour) && !specialCart){
+                if (!firstN){
+                    maxValue = player_Number;
+                    player = i;
+                    firstN=true;
+                    letter='N';
                 }
 
             }
-            if ((letra == jugadorLetra) && !cartaEspecial) {
-                if (valorMax < jugadorValor) {
-                    valorMax = jugadorValor;
-                    jugador = i;
+            if ((letter == player_Colour) && !specialCart) {
+                if (maxValue < player_Number) {
+                    maxValue = player_Number;
+                    player = i;
                 }
             }
         }
-        return "Gana jugador " + (jugador+1);
+        return "Gana jugador " + (player+1);
     }
 }
 
