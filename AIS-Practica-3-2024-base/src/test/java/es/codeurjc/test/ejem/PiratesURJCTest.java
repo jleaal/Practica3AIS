@@ -139,9 +139,27 @@ public class PiratesURJCTest {
         funcionComparativa("Gana jugador 3", "PR SK SR SR");
     }
 
-    /*@Test
+    @Test
     @DisplayName("Test R11_1 (1V KK SR)")
     public void TestR11_1 (){
         funcionComparativa("Gana jugador 1", "1V KK SR");
-    }*/
+    }
+
+    @Test
+    @DisplayName("Test R11_2 (5A PR KK)")
+    public void TestR11_2 (){
+        funcionComparativa("Gana jugador 1", "5A PR KK");
+    }
+
+    @Test
+    @DisplayName("Test R11_3 (7M SK KK)")
+    public void TestR11_3 (){
+        funcionComparativa("Gana jugador 1", "7M SK KK");
+    }
+
+    @Test
+    @DisplayName("Test R11_4 (KK SK 5A SR)")
+    public void TestR11_4 (){
+        funcionComparativa("Gana jugador 3", "KK SK 5A SR");
+    }
 }

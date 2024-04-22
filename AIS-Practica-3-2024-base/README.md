@@ -1266,7 +1266,7 @@ jugador y si el siguiente jugador tiene una carta sirena. Si esto ocurre ganarí
 
 ### R11_1
 
-**INPUT y OUTPUT**: "PR SK SR SR" -> "Gana jugador 3"
+**INPUT y OUTPUT**: "1V KK SR" -> "Gana jugador 1"
 
 **R11_1. Código de test**
 ```java
@@ -1286,60 +1286,343 @@ Actual   :Gana jugador 3
 **R11_1. Código mínimo para que el test pase**
 ```java
     public String play(String ronda) {
-        char letter = ronda.charAt(1);
-        int maxValue = Character.getNumericValue(ronda.charAt(0));
-        int player = 0;
-        boolean firstN=false;
-        String[] playersArray = ronda.split(" ");
-        boolean specialCart = false;
-        boolean pirate = false;
-        boolean skull_king = false;
+    char letter = ronda.charAt(1);
+    int maxValue = Character.getNumericValue(ronda.charAt(0));
+    int player = 0;
+    boolean firstN=false;
+    String[] playersArray = ronda.split(" ");
+    boolean specialCart = false;
+    boolean pirate = false;
+    boolean skull_king = false;
+    boolean kraken = false;
 
 
-        for (int i = 0; i < playersArray.length; i++) {
-            char player_Colour = playersArray[i].charAt(1);
-            int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
+    for (int i = 0; i < playersArray.length; i++) {
+        char player_Colour = playersArray[i].charAt(1);
+        int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
 
-            if (playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK")){
-                specialCart = true;
-                if (playersArray[i].equals("SK")){
-                    skull_king = true;
-                    player = i;
-                    if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
-                        player = i+1;
-                    }
-                }
-                if (playersArray[i].equals("PR") && !skull_king) {
-                    pirate = true;
-                    player = i;
-                }
-                if (playersArray[i].equals("SR") && !(pirate || skull_king)){
-                    player = i;
+        if ((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))){
+            specialCart = true;
+            if (playersArray[i].equals("SK")){
+                skull_king = true;
+                player = i;
+                if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
+                    player = i+1;
                 }
             }
-
-            if (('N'==player_Colour) && !specialCart){
-                if (!firstN){
-                    maxValue = player_Number;
-                    player = i;
-                    firstN=true;
-                    letter='N';
-                }
-
+            if (playersArray[i].equals("PR") && !skull_king) {
+                pirate = true;
+                player = i;
             }
-            if ((letter == player_Colour) && !specialCart) {
-                if (maxValue < player_Number) {
-                    maxValue = player_Number;
-                    player = i;
-                }
+            if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
+                player = i;
+            }
+            if (playersArray[i].equals("KK") && !skull_king){
+                kraken = true;
             }
         }
-        return "Gana jugador " + (player+1);
-    }
-```
-Descripción: Añadimos una condicion if para que si un jugador tiene una carta skull king comprobar si este no es el último
-jugador y si el siguiente jugador tiene una carta sirena. Si esto ocurre ganaría el jugador que tiene la carta sirena.
 
+        if (('N'==player_Colour) && !specialCart){
+            if (!firstN){
+                maxValue = player_Number;
+                player = i;
+                firstN=true;
+                letter='N';
+                maxNumericValue = i;
+            }
+
+        }
+        if ((letter == player_Colour) && !specialCart) {
+            if (maxValue < player_Number) {
+                maxValue = player_Number;
+                player = i;
+            }
+        }
+    }
+    return "Gana jugador " + (player+1);
+}
+```
+Descripción: Añadimos booleano de kraken que omitirá si se juegan cartas sirenas
 **R11_1. Captura de que TODOS los test PASAN**
 
-![Pasa](capturas/R10_1_PASA.png "Pasa")
+![Pasa](capturas/R11_1_PASA.png "Pasa")
+
+
+### R11_2
+
+**INPUT y OUTPUT**: "1V KK SR" -> "Gana jugador 1"
+
+**R11_2. Código de test**
+```java
+@Test
+@DisplayName("Test R11_2 (5A PR KK)")
+public void TestR11_2 (){
+    funcionComparativa("Gana jugador 1", "5A PR KK");
+}
+```
+
+**R11_2. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 1
+Actual   :Gana jugador 2
+
+**R11_2. Código mínimo para que el test pase**
+```java
+    public String play(String ronda) {
+    char letter = ronda.charAt(1);
+    int maxValue = Character.getNumericValue(ronda.charAt(0));
+    int player = 0;
+    boolean firstN=false;
+    String[] playersArray = ronda.split(" ");
+    boolean specialCart = false;
+    boolean pirate = false;
+    boolean skull_king = false;
+    boolean kraken = false;
+
+
+    for (int i = 0; i < playersArray.length; i++) {
+        char player_Colour = playersArray[i].charAt(1);
+        int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
+
+        if ((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))){
+            specialCart = true;
+            if (playersArray[i].equals("SK")){
+                skull_king = true;
+                player = i;
+                if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
+                    player = i+1;
+                }
+            }
+            if (playersArray[i].equals("PR") && !(skull_king || kraken)) {
+                pirate = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+            }
+            if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
+                player = i;
+            }
+            if (playersArray[i].equals("KK") && !skull_king){
+                kraken = true;
+            }
+        }
+
+        if (('N'==player_Colour) && !specialCart){
+            if (!firstN){
+                maxValue = player_Number;
+                player = i;
+                firstN=true;
+                letter='N';
+            }
+
+        }
+        if ((letter == player_Colour) && !specialCart) {
+            if (maxValue < player_Number) {
+                maxValue = player_Number;
+                player = i;
+            }
+        }
+    }
+    return "Gana jugador " + (player+1);
+}
+```
+Descripción: Al igual que antes, añadimos el booleano a pirates por si sale despues de kk. Comprobamos que despues del pirata no aparezcan kk
+**R11_2. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R11_2_PASA.png "Pasa")
+
+### R11_3
+
+**INPUT y OUTPUT**: "7M SK KK" -> "Gana jugador 1"
+
+**R11_3. Código de test**
+```java
+@Test
+@DisplayName("Test R11_3 (7M SK KK)")
+public void TestR11_3 (){
+    funcionComparativa("Gana jugador 1", "7M SK KK");
+}
+```
+
+**R11_3. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 1
+Actual   :Gana jugador 2
+
+**R11_3. Código mínimo para que el test pase**
+```java
+    public String play(String ronda) {
+    char letter = ronda.charAt(1);
+    int maxValue = Character.getNumericValue(ronda.charAt(0));
+    int player = 0;
+    boolean firstN=false;
+    String[] playersArray = ronda.split(" ");
+    boolean specialCart = false;
+    boolean pirate = false;
+    boolean skull_king = false;
+    boolean kraken = false;
+    //int maxNumericValue = 0;
+
+
+    for (int i = 0; i < playersArray.length; i++) {
+        char player_Colour = playersArray[i].charAt(1);
+        int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
+
+        if ((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))){
+            specialCart = true;
+            if (playersArray[i].equals("SK") && !kraken){
+                skull_king = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+                if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
+                    player = i+1;
+                }
+            }
+            if (playersArray[i].equals("PR") && !(skull_king || kraken)) {
+                pirate = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+            }
+            if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
+                player = i;
+            }
+            if (playersArray[i].equals("KK")){
+                kraken = true;
+                //player = maxNumericValue;
+            }
+        }
+
+        if (('N'==player_Colour) && !specialCart){
+            if (!firstN){
+                maxValue = player_Number;
+                player = i;
+                firstN=true;
+                letter='N';
+                //maxNumericValue = i;
+            }
+
+        }
+        if ((letter == player_Colour) && !specialCart) {
+            if (maxValue < player_Number) {
+                maxValue = player_Number;
+                player = i;
+                //maxNumericValue = i;
+            }
+        }
+    }
+    return "Gana jugador " + (player+1);
+}
+```
+Descripción: Igual que con las cartas piratas, verificamos que no se juegue detras una carta kraken
+**R11_3. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R11_3_PASA.png "Pasa")
+
+### R11_4
+
+**INPUT y OUTPUT**: "“KK SK 5A SR" -> "Gana jugador 3"
+
+**R11_4. Código de test**
+```java
+@Test
+@DisplayName("Test R11_4 (“KK SK 5A SR)")
+public void TestR11_4 (){
+    funcionComparativa("Gana jugador 3", "“KK SK 5A SR");
+}
+```
+
+**R11_4. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 3
+Actual   :Gana jugador 2
+
+**R11_4. Código mínimo para que el test pase**
+```java
+    public String play(String ronda) {
+    char letter = ronda.charAt(1);
+    int maxValue = Character.getNumericValue(ronda.charAt(0));
+    int player = 0;
+    boolean firstN=false;
+    String[] playersArray = ronda.split(" ");
+    boolean specialCart = false;
+    boolean pirate = false;
+    boolean skull_king = false;
+    boolean kraken = false;
+    //int maxNumericValue = 0;
+
+
+    for (int i = 0; i < playersArray.length; i++) {
+        char player_Colour = playersArray[i].charAt(1);
+        int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
+
+        if ((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))){
+            specialCart = true;
+            if (playersArray[i].equals("SK") && !kraken){
+                skull_king = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+                if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
+                    player = i+1;
+                }
+            }
+            if (playersArray[i].equals("PR") && !(skull_king || kraken)) {
+                pirate = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+            }
+            if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
+                player = i;
+            }
+            if (playersArray[i].equals("KK")){
+                kraken = true;
+                //player = maxNumericValue;
+            }
+        }
+
+        if (('N'==player_Colour) && !specialCart){
+            if (!firstN){
+                maxValue = player_Number;
+                player = i;
+                firstN=true;
+                letter='N';
+                //maxNumericValue = i;
+            }
+
+        }
+        if ((letter == player_Colour) && !specialCart) {
+            if (maxValue < player_Number) {
+                maxValue = player_Number;
+                player = i;
+                //maxNumericValue = i;
+            }
+        }
+    }
+    return "Gana jugador " + (player+1);
+}
+```
+Descripción: Igual que con las cartas piratas, verificamos que no se juegue detras una carta kraken
+**R11_4. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R11_3_PASA.png "Pasa")
