@@ -1942,14 +1942,14 @@ public class PiratesURJC {
         if (!kraken) {
             if (index != playersArray.length - 1) {
                 if (playersArray[index + 1].equals(MERMAID)) {
-                    return index + 1;  // Skip Skull King and return the index of the player who played the Sirena
+                    return index + 1;  
                 } else if (!playersArray[index + 1].equals(KRAKEN)) {
-                    return index;  // Return the index of Skull King if it's not followed by Kraken or Sirena
+                    return index;  
                 }
             }
-            return index;  // Returns the current player index if it's the last card or no special conditions are met
+            return index; 
         }
-        return index;  // Default return if kraken is true
+        return index;
     }
     private boolean isColorOfInterest(char color) {
         return color == BLACK || color == YELLOW || color == PURPLE || color == GREEN;
@@ -1981,100 +1981,256 @@ Actual   :Gana jugador 1
 
 **R12_1. Código mínimo para que el test pase**
 ```java
-public String play(String ronda) {
-    char letter= ' ';
-    int maxValue;
+package es.codeurjc.test.ejem;
 
-    if (!Character.isLetter(ronda.charAt(0))){
-        maxValue=Character.getNumericValue(ronda.charAt(0));
-    } else {
-        maxValue=0;
+public class PiratesURJC {
+private static final String MERMAID = "SR";
+private static final String PIRATE = "PR";
+private static final String SKULL_KING = "SK";
+private static final String KRAKEN = "KK";
+private static final char YELLOW = 'A';
+private static final char PURPLE = 'M';
+private static final char GREEN = 'V';
+private static final char BLACK = 'N';
+
+    public String play(String ronda) {
+        char letter = ' ';
+        int maxValue = Character.isDigit(ronda.charAt(0)) ? Character.getNumericValue(ronda.charAt(0)) : 0;
+
+        int player = 0;
+        boolean firstN = false;
+        String[] playersArray = ronda.split(" ");
+        boolean specialCart = false;
+        boolean pirate = false;
+        boolean skull_king = false;
+        boolean kraken = false;
+        int allFigures = 0;
+        int maxNumericValue = 0;
+        int player_Number;
+
+        boolean foundSpecialCart = false;
+
+        for (int i = 0; i < playersArray.length; i++) {
+            char player_Colour = playersArray[i].charAt(1);
+            player_Number = Character.isDigit(playersArray[i].charAt(0)) ? Character.getNumericValue(playersArray[i].charAt(0)) : 0;
+
+            if (isColorOfInterest(player_Colour) && !foundSpecialCart) {
+                letter = player_Colour;
+                foundSpecialCart = true;
+            }
+
+            if (isSpecialCard(playersArray[i]) && !kraken) {
+                specialCart = true;
+                if (playersArray[i].equals(KRAKEN)) {
+                    kraken = true;
+                    specialCart = false;
+                    player = maxNumericValue;
+                }
+                if (playersArray[i].equals(SKULL_KING) && !kraken) {
+                    skull_king = true;
+                    if (playersArray[i].equals(SKULL_KING)) {
+                        player = handleSkullKing(playersArray, i, kraken);
+                    }
+                }
+                if (playersArray[i].equals(PIRATE) && !(skull_king || kraken)) {
+                    pirate = true;
+                    if ((i != playersArray.length - 1) && !(playersArray[i + 1].equals(KRAKEN))) {
+                        player = i;
+                    }
+                    if (i == playersArray.length - 1) {
+                        player = i;
+                    }
+                }
+                if (playersArray[i].equals(MERMAID) && !(pirate || skull_king || kraken)) {
+                    player = i;
+                }
+            }
+
+            // Comprobación para verificar si todas las cartas son figuras
+            if (isSpecialCard(playersArray[i])) {
+                allFigures++;
+            }
+
+            if ((BLACK == player_Colour) && !specialCart) {
+                if (!firstN) {
+                    maxValue = player_Number;
+                    player = i;
+                    firstN = true;
+                    letter = BLACK;
+                    maxNumericValue = i;
+                }
+
+            }
+            if (!specialCart && (letter == player_Colour)) {
+                if (maxValue < player_Number) {
+                    maxValue = player_Number;
+                    player = i;
+                    maxNumericValue = i;
+                }
+            }
+        }
+
+        if ((kraken) && (allFigures == playersArray.length)) {
+            for (int i = 0; i < playersArray.length; i++) {
+                if (playersArray[i].equals(KRAKEN)){
+                    return "Gana jugador " + (i+1);
+                }
+            }
+
+        }
+
+        return "Gana jugador " + (kraken ? (maxNumericValue + 1) : (player+1));
     }
-    boolean entered=false;
 
-    int player = 0;
-    boolean firstN=false;
-    String[] playersArray = ronda.split(" ");
-    boolean specialCart = false;
-    boolean pirate = false;
-    boolean skull_king = false;
-    boolean kraken = false;
-    int maxNumericValue = 0;
-    int player_Number;
-
-
-    for (int i = 0; i < playersArray.length; i++) {
-        char player_Colour = playersArray[i].charAt(1);
-
-        if (!Character.isLetter(playersArray[i].charAt(0))){
-            player_Number=Character.getNumericValue(playersArray[i].charAt(0));
-        } else {
-            player_Number=0;
-        }
-
-        if (((playersArray[i].charAt(1)=='N')||(playersArray[i].charAt(1)=='A')||(playersArray[i].charAt(1)=='M')||(playersArray[i].charAt(1)=='V'))&&(!entered)){
-            letter=playersArray[i].charAt(1);
-            entered=true;
-        }
-
-        if (((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))) && !kraken){
-            specialCart = true;
-            if (playersArray[i].equals("KK")){
-                kraken = true;
-                specialCart = false;
-                player = maxNumericValue;
-            }
-            if (playersArray[i].equals("SK") && !kraken){
-                skull_king = true;
-                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
-                    player = i;
-                }
-                if(i == playersArray.length-1){
-                    player = i;
-                }
-                if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
-                    player = i+1;
-                }
-            }
-            if (playersArray[i].equals("PR") && !(skull_king || kraken)) {
-                pirate = true;
-                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
-                    player = i;
-                }
-                if(i == playersArray.length-1){
-                    player = i;
-                }
-            }
-            if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
-                player = i;
-            }
-        }
-
-        if (('N'==player_Colour) && !specialCart){
-            if (!firstN){
-                maxValue = player_Number;
-                player = i;
-                firstN=true;
-                letter='N';
-                maxNumericValue = i;
-            }
-
-        }
-        if (!specialCart && (letter == player_Colour)) {
-            if (maxValue < player_Number) {
-                maxValue = player_Number;
-                player = i;
-                maxNumericValue = i;
-            }
-        }
+    private boolean isSpecialCard(String card) {
+        return card.equals(MERMAID) || card.equals(PIRATE) || card.equals(SKULL_KING) || card.equals(KRAKEN);
     }
-    if (kraken){
-        return "Gana jugador " + (maxNumericValue + 1);
+    private int handleSkullKing(String[] playersArray, int index, boolean kraken) {
+        if (!kraken) {
+            if (index != playersArray.length - 1) {
+                if (playersArray[index + 1].equals(MERMAID)) {
+                    return index + 1;
+                } else if (!playersArray[index + 1].equals(KRAKEN)) {
+                    return index;
+                }
+            }
+            return index;
+        }
+        return index;
     }
-    return "Gana jugador " + (player+1);
+    private boolean isColorOfInterest(char color) {
+        return color == BLACK || color == YELLOW || color == PURPLE || color == GREEN;
+    }
 }
 ```
-Descripción: Cuando el KK se juega primero invalida el resto de cartas especiales
+
+Descripción: Introducimos en el bucle for un contador que cuente las cartas que son figuras. Si una de las cartas ha sido un kraken y 
+el recuento de cartas figuras es igual al total de cartas entonces gana el jugador que posee el kraken.
 **R12_1. Captura de que TODOS los test PASAN**
 
-![Pasa](capturas/R11_4_PASA.png "Pasa")
+![Pasa](capturas/R12_1_PASA.png "Pasa")
+
+**R12_1. Refactorización**
+
+Justificación: Cuando se detecta un Kraken se llama a una función que comprueba si todas las cartas son figuras,
+si esto es así devolvemos como ganador el jugador con el Kraken.
+
+```java
+package es.codeurjc.test.ejem;
+public class PiratesURJC {
+private static final String MERMAID = "SR";
+private static final String PIRATE = "PR";
+private static final String SKULL_KING = "SK";
+private static final String KRAKEN = "KK";
+private static final char YELLOW = 'A';
+private static final char PURPLE = 'M';
+private static final char GREEN = 'V';
+private static final char BLACK = 'N';
+
+    public String play(String ronda) {
+        char letter = ' ';
+        int maxValue = Character.isDigit(ronda.charAt(0)) ? Character.getNumericValue(ronda.charAt(0)) : 0;
+
+        int player = 0;
+        boolean firstN = false;
+        String[] playersArray = ronda.split(" ");
+        boolean specialCart = false;
+        boolean pirate = false;
+        boolean skull_king = false;
+        boolean kraken = false;
+        int maxNumericValue = 0;
+        int player_Number;
+
+        boolean foundSpecialCart = false;
+
+        for (int i = 0; i < playersArray.length; i++) {
+            char player_Colour = playersArray[i].charAt(1);
+            player_Number = Character.isDigit(playersArray[i].charAt(0)) ? Character.getNumericValue(playersArray[i].charAt(0)) : 0;
+
+            if (isColorOfInterest(player_Colour) && !foundSpecialCart) {
+                letter = player_Colour;
+                foundSpecialCart = true;
+            }
+
+            if (isSpecialCard(playersArray[i]) && !kraken) {
+                specialCart = true;
+                if (playersArray[i].equals(KRAKEN)) {
+                    kraken = true;
+                    specialCart = false;
+                    player = maxNumericValue;
+                    if (areAllCardsFigures(playersArray)){return "Gana jugador "+(i+1);}
+                }
+                if (playersArray[i].equals(SKULL_KING) && !kraken) {
+                    skull_king = true;
+                    if (playersArray[i].equals(SKULL_KING)) {
+                        player = handleSkullKing(playersArray, i, kraken);
+                    }
+                }
+                if (playersArray[i].equals(PIRATE) && !(skull_king || kraken)) {
+                    pirate = true;
+                    if ((i != playersArray.length - 1) && !(playersArray[i + 1].equals(KRAKEN))) {
+                        player = i;
+                    }
+                    if (i == playersArray.length - 1) {
+                        player = i;
+                    }
+                }
+                if (playersArray[i].equals(MERMAID) && !(pirate || skull_king || kraken)) {
+                    player = i;
+                }
+            }
+
+            if ((BLACK == player_Colour) && !specialCart) {
+                if (!firstN) {
+                    maxValue = player_Number;
+                    player = i;
+                    firstN = true;
+                    letter = BLACK;
+                    maxNumericValue = i;
+                }
+
+            }
+            if (!specialCart && (letter == player_Colour)) {
+                if (maxValue < player_Number) {
+                    maxValue = player_Number;
+                    player = i;
+                    maxNumericValue = i;
+                }
+            }
+        }
+        return "Gana jugador " + (kraken ? (maxNumericValue + 1) : (player+1));
+    }
+    private boolean isSpecialCard(String card) {
+        return card.equals(MERMAID) || card.equals(PIRATE) || card.equals(SKULL_KING) || card.equals(KRAKEN);
+    }
+    private int handleSkullKing(String[] playersArray, int index, boolean kraken) {
+        if (!kraken) {
+            if (index != playersArray.length - 1) {
+                if (playersArray[index + 1].equals(MERMAID)) {
+                    return index + 1;  
+                } else if (!playersArray[index + 1].equals(KRAKEN)) {
+                    return index;  
+                }
+            }
+            return index;  
+        }
+        return index; 
+    }
+    private boolean isColorOfInterest(char color) {
+        return color == BLACK || color == YELLOW || color == PURPLE || color == GREEN;
+    }
+    private boolean areAllCardsFigures(String[] cards) {
+        for (String card : cards) {
+            if (!isSpecialCard(card)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+}
+```
+
+**R12_1 Captura de que TODOS los tests PASAN tras la refactorización**
+
+![Pasa](capturas/R12_1_Refactorizacion.png "Pasa")

@@ -1,5 +1,4 @@
 package es.codeurjc.test.ejem;
-
 public class PiratesURJC {
     private static final String MERMAID = "SR";
     private static final String PIRATE = "PR";
@@ -21,7 +20,6 @@ public class PiratesURJC {
         boolean pirate = false;
         boolean skull_king = false;
         boolean kraken = false;
-        int allFigures = 0;
         int maxNumericValue = 0;
         int player_Number;
 
@@ -42,6 +40,7 @@ public class PiratesURJC {
                     kraken = true;
                     specialCart = false;
                     player = maxNumericValue;
+                    if (areAllCardsFigures(playersArray)){return "Gana jugador "+(i+1);}
                 }
                 if (playersArray[i].equals(SKULL_KING) && !kraken) {
                     skull_king = true;
@@ -63,11 +62,6 @@ public class PiratesURJC {
                 }
             }
 
-            // Comprobación para verificar si todas las cartas son figuras
-            if (!isFigure(playersArray[i])) {
-                allFigures = allFigures + 1;
-            }
-
             if ((BLACK == player_Colour) && !specialCart) {
                 if (!firstN) {
                     maxValue = player_Number;
@@ -86,21 +80,7 @@ public class PiratesURJC {
                 }
             }
         }
-
-        if (kraken && allFigures == playersArray.length - 1 && playersArray.length == 1) {
-            for (int i = 0; i < playersArray.length; i++) {
-                if (playersArray[i].equals(KRAKEN)){
-                    return "Gana jugador " + (i);
-                }
-            }
-
-        }
-
         return "Gana jugador " + (kraken ? (maxNumericValue + 1) : (player+1));
-    }
-
-    private boolean isFigure(String card) {
-        return card.equals(MERMAID) || card.equals(PIRATE) || card.equals(SKULL_KING);
     }
     private boolean isSpecialCard(String card) {
         return card.equals(MERMAID) || card.equals(PIRATE) || card.equals(SKULL_KING) || card.equals(KRAKEN);
@@ -109,16 +89,25 @@ public class PiratesURJC {
         if (!kraken) {
             if (index != playersArray.length - 1) {
                 if (playersArray[index + 1].equals(MERMAID)) {
-                    return index + 1;  // Skip Skull King and return the index of the player who played the Sirena
+                    return index + 1;
                 } else if (!playersArray[index + 1].equals(KRAKEN)) {
-                    return index;  // Return the index of Skull King if it's not followed by Kraken or Sirena
+                    return index;
                 }
             }
-            return index;  // Returns the current player index if it's the last card or no special conditions are met
+            return index;
         }
-        return index;  // Default return if kraken is true
+        return index;
     }
     private boolean isColorOfInterest(char color) {
         return color == BLACK || color == YELLOW || color == PURPLE || color == GREEN;
     }
+    private boolean areAllCardsFigures(String[] cards) {
+        for (String card : cards) {
+            if (!isSpecialCard(card)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
