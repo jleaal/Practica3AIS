@@ -1851,7 +1851,7 @@ public class PiratesURJC {
 
 **R11_4. Refactorización**
 
-Justificación: Partes del código las gestionamos con métodos facilitando su comprensión y claridad
+Justificación: Partes del código las gestionamos con métodos facilitando su comprensión y claridad. En concreto isColorOfInterest para ver si se juega una cartaNumerica, isSpecialCard para ver si se juega una carta especial y handleSkullKing para todo lo relacionado con skullKing
 ```java
 public class PiratesURJC {
     private static final String MERMAID = "SR";
@@ -1883,7 +1883,7 @@ public class PiratesURJC {
             char player_Colour = playersArray[i].charAt(1);
             player_Number = Character.isDigit(playersArray[i].charAt(0)) ? Character.getNumericValue(playersArray[i].charAt(0)) : 0;
 
-            if (isBasicColor(player_Colour) && !foundSpecialCart) {
+            if (isColorOfInterest(player_Colour) && !foundSpecialCart) {
                 letter = player_Colour;
                 foundSpecialCart = true;
             }
@@ -1897,14 +1897,8 @@ public class PiratesURJC {
                 }
                 if (playersArray[i].equals(SKULL_KING) && !kraken) {
                     skull_king = true;
-                    if ((i != playersArray.length - 1) && !(playersArray[i + 1].equals(KRAKEN))) {
-                        player = i;
-                    }
-                    if (i == playersArray.length - 1) {
-                        player = i;
-                    }
-                    if ((i != playersArray.length - 1) && (playersArray[i + 1].equals(MERMAID))) {
-                        player = i + 1;
+                    if (playersArray[i].equals(SKULL_KING)) {
+                        player = handleSkullKing(playersArray, i, kraken);
                     }
                 }
                 if (playersArray[i].equals(PIRATE) && !(skull_king || kraken)) {
@@ -1939,19 +1933,148 @@ public class PiratesURJC {
                 }
             }
         }
-        return "Gana jugador " + (kraken ? (maxNumericValue + 1) : (player + 1));
+        return "Gana jugador " + (kraken ? (maxNumericValue + 1) : (player+1));
     }
-
     private boolean isSpecialCard(String card) {
         return card.equals(MERMAID) || card.equals(PIRATE) || card.equals(SKULL_KING) || card.equals(KRAKEN);
     }
-
-    private boolean isBasicColor(char color) {
+    private int handleSkullKing(String[] playersArray, int index, boolean kraken) {
+        if (!kraken) {
+            if (index != playersArray.length - 1) {
+                if (playersArray[index + 1].equals(MERMAID)) {
+                    return index + 1;  // Skip Skull King and return the index of the player who played the Sirena
+                } else if (!playersArray[index + 1].equals(KRAKEN)) {
+                    return index;  // Return the index of Skull King if it's not followed by Kraken or Sirena
+                }
+            }
+            return index;  // Returns the current player index if it's the last card or no special conditions are met
+        }
+        return index;  // Default return if kraken is true
+    }
+    private boolean isColorOfInterest(char color) {
         return color == BLACK || color == YELLOW || color == PURPLE || color == GREEN;
     }
+
 }
 ```
 **R11_4 Captura de que TODOS los tests PASAN tras la refactorización**
 
 ![Pasa](capturas/R11_4_Refactorizacion2.png "Pasa")
 
+### R12_1
+
+**INPUT y OUTPUT**: "PR KK SR PR" -> "Gana jugador 2"
+
+**R12_1. Código de test**
+```java
+@Test
+@DisplayName("Test R12_1 (“PR KK SR PR)")
+public void TestR12_1 (){
+    funcionComparativa("Gana jugador 2", "“PR KK SR PR");
+}
+```
+
+**R12_1. Mensaje del test añadido que NO PASA**
+
+Expected :Gana jugador 2
+Actual   :Gana jugador 1
+
+**R12_1. Código mínimo para que el test pase**
+```java
+public String play(String ronda) {
+    char letter= ' ';
+    int maxValue;
+
+    if (!Character.isLetter(ronda.charAt(0))){
+        maxValue=Character.getNumericValue(ronda.charAt(0));
+    } else {
+        maxValue=0;
+    }
+    boolean entered=false;
+
+    int player = 0;
+    boolean firstN=false;
+    String[] playersArray = ronda.split(" ");
+    boolean specialCart = false;
+    boolean pirate = false;
+    boolean skull_king = false;
+    boolean kraken = false;
+    int maxNumericValue = 0;
+    int player_Number;
+
+
+    for (int i = 0; i < playersArray.length; i++) {
+        char player_Colour = playersArray[i].charAt(1);
+
+        if (!Character.isLetter(playersArray[i].charAt(0))){
+            player_Number=Character.getNumericValue(playersArray[i].charAt(0));
+        } else {
+            player_Number=0;
+        }
+
+        if (((playersArray[i].charAt(1)=='N')||(playersArray[i].charAt(1)=='A')||(playersArray[i].charAt(1)=='M')||(playersArray[i].charAt(1)=='V'))&&(!entered)){
+            letter=playersArray[i].charAt(1);
+            entered=true;
+        }
+
+        if (((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))) && !kraken){
+            specialCart = true;
+            if (playersArray[i].equals("KK")){
+                kraken = true;
+                specialCart = false;
+                player = maxNumericValue;
+            }
+            if (playersArray[i].equals("SK") && !kraken){
+                skull_king = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+                if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
+                    player = i+1;
+                }
+            }
+            if (playersArray[i].equals("PR") && !(skull_king || kraken)) {
+                pirate = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+            }
+            if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
+                player = i;
+            }
+        }
+
+        if (('N'==player_Colour) && !specialCart){
+            if (!firstN){
+                maxValue = player_Number;
+                player = i;
+                firstN=true;
+                letter='N';
+                maxNumericValue = i;
+            }
+
+        }
+        if (!specialCart && (letter == player_Colour)) {
+            if (maxValue < player_Number) {
+                maxValue = player_Number;
+                player = i;
+                maxNumericValue = i;
+            }
+        }
+    }
+    if (kraken){
+        return "Gana jugador " + (maxNumericValue + 1);
+    }
+    return "Gana jugador " + (player+1);
+}
+```
+Descripción: Cuando el KK se juega primero invalida el resto de cartas especiales
+**R12_1. Captura de que TODOS los test PASAN**
+
+![Pasa](capturas/R11_4_PASA.png "Pasa")
