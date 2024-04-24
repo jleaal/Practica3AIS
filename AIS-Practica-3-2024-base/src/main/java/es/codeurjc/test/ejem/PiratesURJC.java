@@ -3,8 +3,16 @@ package es.codeurjc.test.ejem;
 public class PiratesURJC {
 
     public String play(String ronda) {
-        char letter = ronda.charAt(1);
-        int maxValue = Character.getNumericValue(ronda.charAt(0));
+        char letter= 'X';
+        int maxValue;
+
+        if (!Character.isLetter(ronda.charAt(0))){
+            maxValue=Character.getNumericValue(ronda.charAt(0));
+        } else {
+            maxValue=0;
+        }
+        boolean entrado=false;
+
         int player = 0;
         boolean firstN=false;
         String[] playersArray = ronda.split(" ");
@@ -13,11 +21,22 @@ public class PiratesURJC {
         boolean skull_king = false;
         boolean kraken = false;
         int maxNumericValue = 0;
+        int player_Number;
 
 
         for (int i = 0; i < playersArray.length; i++) {
             char player_Colour = playersArray[i].charAt(1);
-            int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
+
+            if (!Character.isLetter(playersArray[i].charAt(0))){
+                player_Number=Character.getNumericValue(playersArray[i].charAt(0));
+            } else {
+                player_Number=0;
+            }
+
+            if (((playersArray[i].charAt(1)=='N')||(playersArray[i].charAt(1)=='A')||(playersArray[i].charAt(1)=='M')||(playersArray[i].charAt(1)=='V'))&&(!entrado)){
+                letter=playersArray[i].charAt(1);
+                entrado=true;
+            }
 
             if (((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))) && !kraken){
                 specialCart = true;
@@ -62,7 +81,7 @@ public class PiratesURJC {
                 }
 
             }
-            if ((letter == player_Colour) && !specialCart) {
+            if (!specialCart && (letter == player_Colour)) {
                 if (maxValue < player_Number) {
                     maxValue = player_Number;
                     player = i;
