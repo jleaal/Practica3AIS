@@ -1531,30 +1531,21 @@ Descripción: Igual que con las cartas piratas, verificamos que no se juegue det
 
 ![Pasa](capturas/R11_3_PASA.png "Pasa")
 
-### R11_4
+**R11_3. Refactorización**
 
-**INPUT y OUTPUT**: "“KK SK 5A SR" -> "Gana jugador 3"
-
-**R11_4. Código de test**
+Justificación: Nos hemos dado cuenta de que no estabamos gestionando correctamente como guardábamos los valores del palo de la primera letra y el valor máximo de las letras, pues tomamamos cartas no numéricas para guardar estos valores generando valores no realistas. Hemos añadido una nueva comprobación para gestionarlo de forma correcta
 ```java
-@Test
-@DisplayName("Test R11_4 (“KK SK 5A SR)")
-public void TestR11_4 (){
-    funcionComparativa("Gana jugador 3", "“KK SK 5A SR");
-}
-```
+public String play(String ronda) {
+    char letter= ' ';
+    int maxValue;
 
-**R11_4. Mensaje del test añadido que NO PASA**
+    if (!Character.isLetter(ronda.charAt(0))){
+        maxValue=Character.getNumericValue(ronda.charAt(0));
+    } else {
+        maxValue=0;
+    }
+    boolean entered=false;
 
-org.opentest4j.AssertionFailedError:
-Expected :Gana jugador 3
-Actual   :Gana jugador 2
-
-**R11_4. Código mínimo para que el test pase**
-```java
-    public String play(String ronda) {
-    char letter = ronda.charAt(1);
-    int maxValue = Character.getNumericValue(ronda.charAt(0));
     int player = 0;
     boolean firstN=false;
     String[] playersArray = ronda.split(" ");
@@ -1562,15 +1553,31 @@ Actual   :Gana jugador 2
     boolean pirate = false;
     boolean skull_king = false;
     boolean kraken = false;
-    //int maxNumericValue = 0;
+    int maxNumericValue = 0;
+    int player_Number;
 
 
     for (int i = 0; i < playersArray.length; i++) {
         char player_Colour = playersArray[i].charAt(1);
-        int player_Number = Character.getNumericValue(playersArray[i].charAt(0));
 
-        if ((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))){
+        if (!Character.isLetter(playersArray[i].charAt(0))){
+            player_Number=Character.getNumericValue(playersArray[i].charAt(0));
+        } else {
+            player_Number=0;
+        }
+
+        if (((playersArray[i].charAt(1)=='N')||(playersArray[i].charAt(1)=='A')||(playersArray[i].charAt(1)=='M')||(playersArray[i].charAt(1)=='V'))&&(!entered)){
+            letter=playersArray[i].charAt(1);
+            entered=true;
+        }
+
+        if (((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))) && !kraken){
             specialCart = true;
+            if (playersArray[i].equals("KK")){
+                kraken = true;
+                specialCart = false;
+                player = maxNumericValue;
+            }
             if (playersArray[i].equals("SK") && !kraken){
                 skull_king = true;
                 if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
@@ -1595,9 +1602,123 @@ Actual   :Gana jugador 2
             if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
                 player = i;
             }
+        }
+
+        if (('N'==player_Colour) && !specialCart){
+            if (!firstN){
+                maxValue = player_Number;
+                player = i;
+                firstN=true;
+                letter='N';
+                maxNumericValue = i;
+            }
+
+        }
+        if (!specialCart && (letter == player_Colour)) {
+            if (maxValue < player_Number) {
+                maxValue = player_Number;
+                player = i;
+                maxNumericValue = i;
+            }
+        }
+    }
+    if (kraken){
+        return "Gana jugador " + (maxNumericValue + 1);
+    }
+    return "Gana jugador " + (player+1);
+}
+```
+**R11_3 Captura de que TODOS los tests PASAN tras la refactorización**
+
+![Pasa](capturas/R11_3_Refactorizacion.png "Pasa")
+
+### R11_4
+
+**INPUT y OUTPUT**: "“KK SK 5A SR" -> "Gana jugador 3"
+
+**R11_4. Código de test**
+```java
+@Test
+@DisplayName("Test R11_4 (“KK SK 5A SR)")
+public void TestR11_4 (){
+    funcionComparativa("Gana jugador 3", "“KK SK 5A SR");
+}
+```
+
+**R11_4. Mensaje del test añadido que NO PASA**
+
+org.opentest4j.AssertionFailedError:
+Expected :Gana jugador 3
+Actual   :Gana jugador 2
+
+**R11_4. Código mínimo para que el test pase**
+```java
+public String play(String ronda) {
+    char letter= ' ';
+    int maxValue;
+
+    if (!Character.isLetter(ronda.charAt(0))){
+        maxValue=Character.getNumericValue(ronda.charAt(0));
+    } else {
+        maxValue=0;
+    }
+    boolean entered=false;
+
+    int player = 0;
+    boolean firstN=false;
+    String[] playersArray = ronda.split(" ");
+    boolean specialCart = false;
+    boolean pirate = false;
+    boolean skull_king = false;
+    boolean kraken = false;
+    int maxNumericValue = 0;
+    int player_Number;
+
+
+    for (int i = 0; i < playersArray.length; i++) {
+        char player_Colour = playersArray[i].charAt(1);
+
+        if (!Character.isLetter(playersArray[i].charAt(0))){
+            player_Number=Character.getNumericValue(playersArray[i].charAt(0));
+        } else {
+            player_Number=0;
+        }
+
+        if (((playersArray[i].charAt(1)=='N')||(playersArray[i].charAt(1)=='A')||(playersArray[i].charAt(1)=='M')||(playersArray[i].charAt(1)=='V'))&&(!entered)){
+            letter=playersArray[i].charAt(1);
+            entered=true;
+        }
+
+        if (((playersArray[i].equals("SR") || playersArray[i].equals("PR") || playersArray[i].equals("SK") || playersArray[i].equals("KK"))) && !kraken){
+            specialCart = true;
             if (playersArray[i].equals("KK")){
                 kraken = true;
-                //player = maxNumericValue;
+                specialCart = false;
+                player = maxNumericValue;
+            }
+            if (playersArray[i].equals("SK") && !kraken){
+                skull_king = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+                if ((i != playersArray.length-1)&&(playersArray[i+1].equals("SR"))){
+                    player = i+1;
+                }
+            }
+            if (playersArray[i].equals("PR") && !(skull_king || kraken)) {
+                pirate = true;
+                if ((i != playersArray.length-1)&&!(playersArray[i+1].equals("KK"))){
+                    player = i;
+                }
+                if(i == playersArray.length-1){
+                    player = i;
+                }
+            }
+            if (playersArray[i].equals("SR") && !(pirate || skull_king || kraken)){
+                player = i;
             }
         }
 
@@ -1607,22 +1728,230 @@ Actual   :Gana jugador 2
                 player = i;
                 firstN=true;
                 letter='N';
-                //maxNumericValue = i;
+                maxNumericValue = i;
             }
 
         }
-        if ((letter == player_Colour) && !specialCart) {
+        if (!specialCart && (letter == player_Colour)) {
             if (maxValue < player_Number) {
                 maxValue = player_Number;
                 player = i;
-                //maxNumericValue = i;
+                maxNumericValue = i;
             }
         }
+    }
+    if (kraken){
+        return "Gana jugador " + (maxNumericValue + 1);
     }
     return "Gana jugador " + (player+1);
 }
 ```
-Descripción: Igual que con las cartas piratas, verificamos que no se juegue detras una carta kraken
+Descripción: Cuando el KK se juega primero invalida el resto de cartas especiales
 **R11_4. Captura de que TODOS los test PASAN**
 
-![Pasa](capturas/R11_3_PASA.png "Pasa")
+![Pasa](capturas/R11_4_PASA.png "Pasa")
+
+**R11_4. Refactorización**
+
+Justificación: Mejora en la legibilidad y claridad del codigo añadiendo tres operaciones ternarias y con la creación de constantes para búsquedas redundantes
+```java
+public class PiratesURJC {
+    private static final String MERMAID = "SR";
+    private static final String PIRATE = "PR";
+    private static final String SKULL_KING = "SK";
+    private static final String KRAKEN = "KK";
+    private static final char YELLOW = 'A';
+    private static final char PURPLE = 'M';
+    private static final char GREEN = 'V';
+    private static final char BLACK = 'N';
+
+    public String play(String ronda) {
+        char letter = ' ';
+        int maxValue = Character.isDigit(ronda.charAt(0)) ? Character.getNumericValue(ronda.charAt(0)) : 0;
+
+        int player = 0;
+        boolean firstN = false;
+        String[] playersArray = ronda.split(" ");
+        boolean specialCart = false;
+        boolean pirate = false;
+        boolean skull_king = false;
+        boolean kraken = false;
+        int maxNumericValue = 0;
+        int player_Number;
+
+        boolean foundSpecialCart = false;
+
+        for (int i = 0; i < playersArray.length; i++) {
+            char player_Colour = playersArray[i].charAt(1);
+            player_Number = Character.isDigit(playersArray[i].charAt(0)) ? Character.getNumericValue(playersArray[i].charAt(0)) : 0;
+
+            if ((player_Colour == BLACK || player_Colour == YELLOW || player_Colour == PURPLE || player_Colour == GREEN) && !foundSpecialCart) {
+                letter = player_Colour;
+                foundSpecialCart = true;
+            }
+
+            if ((playersArray[i].equals(MERMAID) || playersArray[i].equals(PIRATE) || playersArray[i].equals(SKULL_KING) || playersArray[i].equals(KRAKEN)) && !kraken) {
+                specialCart = true;
+                if (playersArray[i].equals(KRAKEN)) {
+                    kraken = true;
+                    specialCart = false;
+                    player = maxNumericValue;
+                }
+                if (playersArray[i].equals(SKULL_KING) && !kraken) {
+                    skull_king = true;
+                    if ((i != playersArray.length - 1) && !(playersArray[i + 1].equals(KRAKEN))) {
+                        player = i;
+                    }
+                    if (i == playersArray.length - 1) {
+                        player = i;
+                    }
+                    if ((i != playersArray.length - 1) && (playersArray[i + 1].equals(MERMAID))) {
+                        player = i + 1;
+                    }
+                }
+                if (playersArray[i].equals(PIRATE) && !(skull_king || kraken)) {
+                    pirate = true;
+                    if ((i != playersArray.length - 1) && !(playersArray[i + 1].equals(KRAKEN))) {
+                        player = i;
+                    }
+                    if (i == playersArray.length - 1) {
+                        player = i;
+                    }
+                }
+                if (playersArray[i].equals(MERMAID) && !(pirate || skull_king || kraken)) {
+                    player = i;
+                }
+            }
+
+            if ((BLACK == player_Colour) && !specialCart) {
+                if (!firstN) {
+                    maxValue = player_Number;
+                    player = i;
+                    firstN = true;
+                    letter = BLACK;
+                    maxNumericValue = i;
+                }
+
+            }
+            if (!specialCart && (letter == player_Colour)) {
+                if (maxValue < player_Number) {
+                    maxValue = player_Number;
+                    player = i;
+                    maxNumericValue = i;
+                }
+            }
+        }
+        return "Gana jugador " + (kraken ? (maxNumericValue + 1) : (player + 1));
+    }
+}
+```
+**R11_4 Captura de que TODOS los tests PASAN tras la refactorización**
+
+![Pasa](capturas/R11_4_Refactorizacion.png "Pasa")
+
+**R11_4. Refactorización**
+
+Justificación: Partes del código las gestionamos con métodos facilitando su comprensión y claridad
+```java
+public class PiratesURJC {
+    private static final String MERMAID = "SR";
+    private static final String PIRATE = "PR";
+    private static final String SKULL_KING = "SK";
+    private static final String KRAKEN = "KK";
+    private static final char YELLOW = 'A';
+    private static final char PURPLE = 'M';
+    private static final char GREEN = 'V';
+    private static final char BLACK = 'N';
+
+    public String play(String ronda) {
+        char letter = ' ';
+        int maxValue = Character.isDigit(ronda.charAt(0)) ? Character.getNumericValue(ronda.charAt(0)) : 0;
+
+        int player = 0;
+        boolean firstN = false;
+        String[] playersArray = ronda.split(" ");
+        boolean specialCart = false;
+        boolean pirate = false;
+        boolean skull_king = false;
+        boolean kraken = false;
+        int maxNumericValue = 0;
+        int player_Number;
+
+        boolean foundSpecialCart = false;
+
+        for (int i = 0; i < playersArray.length; i++) {
+            char player_Colour = playersArray[i].charAt(1);
+            player_Number = Character.isDigit(playersArray[i].charAt(0)) ? Character.getNumericValue(playersArray[i].charAt(0)) : 0;
+
+            if (isBasicColor(player_Colour) && !foundSpecialCart) {
+                letter = player_Colour;
+                foundSpecialCart = true;
+            }
+
+            if (isSpecialCard(playersArray[i]) && !kraken) {
+                specialCart = true;
+                if (playersArray[i].equals(KRAKEN)) {
+                    kraken = true;
+                    specialCart = false;
+                    player = maxNumericValue;
+                }
+                if (playersArray[i].equals(SKULL_KING) && !kraken) {
+                    skull_king = true;
+                    if ((i != playersArray.length - 1) && !(playersArray[i + 1].equals(KRAKEN))) {
+                        player = i;
+                    }
+                    if (i == playersArray.length - 1) {
+                        player = i;
+                    }
+                    if ((i != playersArray.length - 1) && (playersArray[i + 1].equals(MERMAID))) {
+                        player = i + 1;
+                    }
+                }
+                if (playersArray[i].equals(PIRATE) && !(skull_king || kraken)) {
+                    pirate = true;
+                    if ((i != playersArray.length - 1) && !(playersArray[i + 1].equals(KRAKEN))) {
+                        player = i;
+                    }
+                    if (i == playersArray.length - 1) {
+                        player = i;
+                    }
+                }
+                if (playersArray[i].equals(MERMAID) && !(pirate || skull_king || kraken)) {
+                    player = i;
+                }
+            }
+
+            if ((BLACK == player_Colour) && !specialCart) {
+                if (!firstN) {
+                    maxValue = player_Number;
+                    player = i;
+                    firstN = true;
+                    letter = BLACK;
+                    maxNumericValue = i;
+                }
+
+            }
+            if (!specialCart && (letter == player_Colour)) {
+                if (maxValue < player_Number) {
+                    maxValue = player_Number;
+                    player = i;
+                    maxNumericValue = i;
+                }
+            }
+        }
+        return "Gana jugador " + (kraken ? (maxNumericValue + 1) : (player + 1));
+    }
+
+    private boolean isSpecialCard(String card) {
+        return card.equals(MERMAID) || card.equals(PIRATE) || card.equals(SKULL_KING) || card.equals(KRAKEN);
+    }
+
+    private boolean isBasicColor(char color) {
+        return color == BLACK || color == YELLOW || color == PURPLE || color == GREEN;
+    }
+}
+```
+**R11_4 Captura de que TODOS los tests PASAN tras la refactorización**
+
+![Pasa](capturas/R11_4_Refactorizacion2.png "Pasa")
+
